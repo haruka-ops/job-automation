@@ -1,0 +1,345 @@
+"""
+国际化模块 - 中英文切换
+用法：from utils.i18n import t, set_lang
+"""
+
+import streamlit as st
+
+TRANSLATIONS = {
+    "zh": {
+        # 通用
+        "app_title": "求职自动化系统",
+        "app_subtitle": "自动抓取 LinkedIn / Glassdoor 职位 → AI 匹配评分 → 定制简历 → 投递追踪",
+        "api_key_label": "🔑 Claude API Key",
+        "api_key_help": "在 https://console.anthropic.com 获取",
+        "api_key_set": "✅ API Key 已配置",
+        "system_note": "系统说明",
+        "system_note_body": "- 职位抓取需配置目标平台\n- 简历建议上传 PDF 或 Word 格式\n- AI功能需要 Claude API Key",
+        "language": "🌐 语言 / Language",
+
+        # 导航
+        "nav_home": "🏠 主页总览",
+        "nav_resume": "📄 简历管理",
+        "nav_jobs": "🔍 职位搜索",
+        "nav_matching": "🤖 AI匹配",
+        "nav_generator": "📝 生成材料",
+        "nav_tracker": "📊 投递追踪",
+
+        # 主页
+        "home_title": "🏠 求职自动化系统",
+        "home_subtitle": "自动抓取 LinkedIn / Glassdoor 职位 → AI 匹配评分 → 定制简历 → 投递追踪",
+        "total_jobs": "📋 总职位",
+        "pending": "🆕 待处理",
+        "applied": "📨 已投递",
+        "interviewing": "🤝 面试中",
+        "offers": "🎉 Offer",
+        "recent_jobs": "🕐 最近抓取的职位",
+        "go_search": "👆 前往「职位搜索」开始抓取职位",
+        "quick_start": "🚀 快速开始",
+        "upload_resume": "📄 上传简历",
+        "search_jobs": "🔍 搜索职位",
+        "ai_match": "🤖 AI 匹配",
+
+        # 职位搜索
+        "jobs_title": "🔍 职位搜索",
+        "jobs_subtitle": "配置搜索参数，系统将自动登录 LinkedIn / Glassdoor 并抓取职位。",
+        "search_params": "🎯 搜索参数",
+        "keyword": "职位关键词",
+        "keyword_placeholder": "e.g. Product Manager",
+        "location": "地点",
+        "location_placeholder": "e.g. San Francisco, United States",
+        "remote_only": "仅远程职位",
+        "date_posted": "发布时间",
+        "date_days": "最近 {} 天",
+        "max_pages": "每平台最多页数",
+        "max_pages_help": "建议第一次选 1 页测试",
+        "headless": "无头模式（不弹浏览器窗口）",
+        "credentials": "🔐 平台账号",
+        "enable_linkedin": "启用 LinkedIn",
+        "linkedin_email": "LinkedIn 邮箱",
+        "linkedin_password": "LinkedIn 密码",
+        "enable_glassdoor": "启用 Glassdoor",
+        "glassdoor_email": "Glassdoor 邮箱",
+        "glassdoor_password": "Glassdoor 密码",
+        "start_scrape": "🚀 开始抓取",
+        "stop": "⏹ 停止",
+        "scrape_log": "📋 抓取日志",
+        "scraping": "⏳ 正在抓取中，Chrome 窗口会自动弹出…",
+        "scrape_done": "✅ 抓取完成",
+        "scanned": "扫描总数",
+        "new_saved": "新增入库",
+        "duplicates": "重复跳过",
+        "errors": "错误数",
+        "db_jobs": "📦 数据库现有职位",
+        "no_jobs": "数据库暂无职位，点击「开始抓取」获取数据",
+        "err_no_keyword": "请填写职位关键词",
+        "err_no_li_email": "已勾选 LinkedIn 但未填写邮箱",
+        "err_no_gd_email": "已勾选 Glassdoor 但未填写邮箱",
+        "tips_title": "ℹ️ 使用提示",
+        "tips_body": "- 第一次建议只选 **1 页、只开 LinkedIn**，确认能正常登录再加量\n- Chrome 弹出后若出现验证码，在那个窗口里手动完成，程序会自动继续\n- 每次抓取之间建议间隔 30 分钟\n- 抓取时不要合上 MacBook 盖子",
+
+        # 简历
+        "resume_title": "📄 简历管理",
+        "upload_tab": "上传 / 编辑简历",
+        "versions_tab": "已保存的版本",
+        "upload_label": "支持 PDF 或 Word (.docx)",
+        "parse_success": "✅ 解析成功，共 {} 字符",
+        "paste_label": "或直接粘贴简历内容：",
+        "paste_placeholder": "粘贴你的简历内容...",
+        "version_name": "版本名称",
+        "set_base": "设为基础简历（AI 定制的底本）",
+        "save_resume": "💾 保存简历",
+        "no_resumes": "暂无已保存的简历，请先上传",
+        "current_base": "⭐ 当前基础简历：**{}**（{}）",
+
+        # AI 匹配
+        "matching_title": "🤖 AI 匹配分析",
+        "no_api_key": "⚠️ 请先在左侧边栏填写 Claude API Key",
+        "no_base_resume": "⚠️ 请先在「简历管理」上传基础简历",
+        "using_resume": "📄 使用简历：**{}**",
+        "pending_score": "待评分职位",
+        "scored": "已评分",
+        "high_score": "高分(≥70)",
+        "batch_analyze": "🤖 分析 {} 个职位",
+        "analyzing": "正在分析 {}/{}：{} @ {}",
+        "analyze_done": "✅ 完成！已分析 {} 个职位",
+        "score_results": "📊 评分结果",
+        "min_score": "最低显示分数",
+        "showing": "显示 {} / {} 条",
+        "no_scores": "暂无评分数据，点击上方按钮开始分析",
+        "summary": "**总结：**",
+        "strengths": "**✅ 优势：**",
+        "gaps": "**⚠️ 不足：**",
+        "missing_kw": "**🔑 缺失关键词：**",
+        "match_score": "匹配分",
+        "view_post": "查看原帖",
+        "gen_materials": "📝 生成投递材料",
+
+        # 生成材料
+        "generator_title": "📝 生成投递材料",
+        "select_job": "选择目标职位",
+        "no_jobs_db": "📭 数据库暂无职位，请先前往「职位搜索」抓取职位",
+        "gen_resume_cb": "📄 生成定制简历",
+        "gen_cover_cb": "✉️ 生成求职信",
+        "cover_lang": "求职信语言",
+        "start_gen": "✨ 开始生成",
+        "tailored_resume": "### 📄 定制简历",
+        "cover_letter": "### ✉️ 求职信",
+        "editable": "可直接编辑",
+        "save_version": "💾 保存简历版本",
+        "download_word": "⬇️ 下载 Word",
+        "download_cover": "⬇️ 下载求职信",
+        "mark_applied": "📨 标记为已投递",
+        "applied_success": "✅ 已记录投递：{} @ {}",
+        "saved_as": "✅ 已保存为「{}」",
+
+        # 追踪
+        "tracker_title": "📊 投递追踪",
+        "total_apps": "📨 总投递",
+        "interviews": "🤝 面试",
+        "offer_count": "🎉 Offer",
+        "conversion": "转化率",
+        "interview_rate": "面试率",
+        "no_apps": "暂无投递记录，完成简历生成后点击「标记为已投递」",
+        "filter_status": "筛选状态",
+        "showing_apps": "显示 {} / {} 条记录",
+        "source": "来源",
+        "update_status": "更新状态",
+        "update_btn": "更新",
+        "export_csv": "📥 导出 CSV",
+        "download_csv": "下载 CSV",
+
+        # 状态
+        "status_sent": "📨 已投递",
+        "status_viewed": "👀 已查看",
+        "status_interview": "🤝 面试",
+        "status_offer": "🎉 Offer",
+        "status_rejected": "❌ 拒绝",
+
+        # 表格列名
+        "col_source": "来源",
+        "col_title": "职位",
+        "col_company": "公司",
+        "col_location": "地点",
+        "col_posted": "发布",
+        "col_score": "AI评分",
+        "col_status": "状态",
+    },
+
+    "en": {
+        # General
+        "app_title": "Job Application Automation",
+        "app_subtitle": "Scrape LinkedIn / Glassdoor → AI Matching → Tailored Resume → Application Tracking",
+        "api_key_label": "🔑 Claude API Key",
+        "api_key_help": "Get it at https://console.anthropic.com",
+        "api_key_set": "✅ API Key configured",
+        "system_note": "Notes",
+        "system_note_body": "- Configure platform credentials before scraping\n- Upload resume in PDF or Word format\n- Claude API Key required for AI features",
+        "language": "🌐 语言 / Language",
+
+        # Nav
+        "nav_home": "🏠 Dashboard",
+        "nav_resume": "📄 Resume",
+        "nav_jobs": "🔍 Job Search",
+        "nav_matching": "🤖 AI Matching",
+        "nav_generator": "📝 Generate",
+        "nav_tracker": "📊 Tracker",
+
+        # Home
+        "home_title": "🏠 Job Application Automation",
+        "home_subtitle": "Scrape LinkedIn / Glassdoor → AI Matching → Tailored Resume → Application Tracking",
+        "total_jobs": "📋 Total Jobs",
+        "pending": "🆕 New",
+        "applied": "📨 Applied",
+        "interviewing": "🤝 Interviewing",
+        "offers": "🎉 Offers",
+        "recent_jobs": "🕐 Recently Scraped Jobs",
+        "go_search": "👆 Go to Job Search to start scraping",
+        "quick_start": "🚀 Quick Start",
+        "upload_resume": "📄 Upload Resume",
+        "search_jobs": "🔍 Search Jobs",
+        "ai_match": "🤖 AI Match",
+
+        # Jobs
+        "jobs_title": "🔍 Job Search",
+        "jobs_subtitle": "Configure search parameters to automatically scrape LinkedIn / Glassdoor.",
+        "search_params": "🎯 Search Parameters",
+        "keyword": "Job keyword",
+        "keyword_placeholder": "e.g. Product Manager",
+        "location": "Location",
+        "location_placeholder": "e.g. San Francisco, United States",
+        "remote_only": "Remote only",
+        "date_posted": "Date posted",
+        "date_days": "Last {} days",
+        "max_pages": "Max pages per platform",
+        "max_pages_help": "Start with 1 page for testing",
+        "headless": "Headless mode (no browser window)",
+        "credentials": "🔐 Platform Credentials",
+        "enable_linkedin": "Enable LinkedIn",
+        "linkedin_email": "LinkedIn email",
+        "linkedin_password": "LinkedIn password",
+        "enable_glassdoor": "Enable Glassdoor",
+        "glassdoor_email": "Glassdoor email",
+        "glassdoor_password": "Glassdoor password",
+        "start_scrape": "🚀 Start Scraping",
+        "stop": "⏹ Stop",
+        "scrape_log": "📋 Scrape Log",
+        "scraping": "⏳ Scraping in progress, Chrome will pop up automatically…",
+        "scrape_done": "✅ Scraping complete",
+        "scanned": "Scanned",
+        "new_saved": "Saved",
+        "duplicates": "Duplicates",
+        "errors": "Errors",
+        "db_jobs": "📦 Jobs in Database",
+        "no_jobs": "No jobs yet. Click Start Scraping to get data.",
+        "err_no_keyword": "Please enter a job keyword",
+        "err_no_li_email": "LinkedIn enabled but no email provided",
+        "err_no_gd_email": "Glassdoor enabled but no email provided",
+        "tips_title": "ℹ️ Tips",
+        "tips_body": "- Start with **1 page, LinkedIn only** to verify login works\n- If a CAPTCHA appears in Chrome, complete it manually — the script will continue\n- Wait 30 minutes between scraping sessions\n- Don't close your MacBook lid while scraping",
+
+        # Resume
+        "resume_title": "📄 Resume Management",
+        "upload_tab": "Upload / Edit Resume",
+        "versions_tab": "Saved Versions",
+        "upload_label": "PDF or Word (.docx) supported",
+        "parse_success": "✅ Parsed successfully — {} characters",
+        "paste_label": "Or paste resume content directly:",
+        "paste_placeholder": "Paste your resume here...",
+        "version_name": "Version name",
+        "set_base": "Set as base resume (used for AI tailoring)",
+        "save_resume": "💾 Save Resume",
+        "no_resumes": "No saved resumes yet. Please upload one.",
+        "current_base": "⭐ Current base resume: **{}** ({})",
+
+        # Matching
+        "matching_title": "🤖 AI Match Analysis",
+        "no_api_key": "⚠️ Please enter your Claude API Key in the sidebar first",
+        "no_base_resume": "⚠️ Please upload a base resume in Resume Management first",
+        "using_resume": "📄 Using resume: **{}**",
+        "pending_score": "Pending",
+        "scored": "Scored",
+        "high_score": "High score (≥70)",
+        "batch_analyze": "🤖 Analyze {} jobs",
+        "analyzing": "Analyzing {}/{}: {} @ {}",
+        "analyze_done": "✅ Done! Analyzed {} jobs",
+        "score_results": "📊 Score Results",
+        "min_score": "Minimum score to display",
+        "showing": "Showing {} / {}",
+        "no_scores": "No scores yet. Click the button above to start.",
+        "summary": "**Summary:**",
+        "strengths": "**✅ Strengths:**",
+        "gaps": "**⚠️ Gaps:**",
+        "missing_kw": "**🔑 Missing keywords:**",
+        "match_score": "Match score",
+        "view_post": "View posting",
+        "gen_materials": "📝 Generate materials",
+
+        # Generator
+        "generator_title": "📝 Generate Application Materials",
+        "select_job": "Select target job",
+        "no_jobs_db": "📭 No jobs in database. Go to Job Search first.",
+        "gen_resume_cb": "📄 Generate tailored resume",
+        "gen_cover_cb": "✉️ Generate cover letter",
+        "cover_lang": "Cover letter language",
+        "start_gen": "✨ Generate",
+        "tailored_resume": "### 📄 Tailored Resume",
+        "cover_letter": "### ✉️ Cover Letter",
+        "editable": "You can edit this directly",
+        "save_version": "💾 Save version",
+        "download_word": "⬇️ Download Word",
+        "download_cover": "⬇️ Download cover letter",
+        "mark_applied": "📨 Mark as Applied",
+        "applied_success": "✅ Application recorded: {} @ {}",
+        "saved_as": "✅ Saved as \"{}\"",
+
+        # Tracker
+        "tracker_title": "📊 Application Tracker",
+        "total_apps": "📨 Total Applied",
+        "interviews": "🤝 Interviews",
+        "offer_count": "🎉 Offers",
+        "conversion": "Offer rate",
+        "interview_rate": "Interview rate",
+        "no_apps": "No applications yet. Generate materials and click Mark as Applied.",
+        "filter_status": "Filter by status",
+        "showing_apps": "Showing {} / {} records",
+        "source": "Source",
+        "update_status": "Update status",
+        "update_btn": "Update",
+        "export_csv": "📥 Export CSV",
+        "download_csv": "Download CSV",
+
+        # Status labels
+        "status_sent": "📨 Applied",
+        "status_viewed": "👀 Viewed",
+        "status_interview": "🤝 Interview",
+        "status_offer": "🎉 Offer",
+        "status_rejected": "❌ Rejected",
+
+        # Table columns
+        "col_source": "Source",
+        "col_title": "Title",
+        "col_company": "Company",
+        "col_location": "Location",
+        "col_posted": "Posted",
+        "col_score": "AI Score",
+        "col_status": "Status",
+    }
+}
+
+
+def get_lang() -> str:
+    """获取当前语言，默认中文"""
+    return st.session_state.get("lang", "zh")
+
+
+def t(key: str, *args) -> str:
+    """翻译函数，支持 format 参数"""
+    lang = get_lang()
+    text = TRANSLATIONS.get(lang, TRANSLATIONS["zh"]).get(key, key)
+    if args:
+        try:
+            text = text.format(*args)
+        except Exception:
+            pass
+    return text
